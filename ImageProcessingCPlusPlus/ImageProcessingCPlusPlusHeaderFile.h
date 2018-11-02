@@ -1,13 +1,9 @@
 #pragma once
 
-#ifndef ImageProcessing
-#define ImageProcessing
-class ImageProcessing
+class ImageProcessor
 {
 private:
 	int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
-	void Initialize(const WCHAR* location);
 public:
-
+	ImageProcessor(WCHAR* location);
 };
-#endif
