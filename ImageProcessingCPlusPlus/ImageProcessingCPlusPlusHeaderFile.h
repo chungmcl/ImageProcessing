@@ -4,6 +4,8 @@ class ImageProcessor
 {
 private:
 	int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
+	Gdiplus::Bitmap currentImage;
 public:
-	ImageProcessor(WCHAR* location);
+	ImageProcessor(const WCHAR* location);
+	void GrayScale();
 };

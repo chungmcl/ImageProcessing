@@ -152,10 +152,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\DrawPanelCpp\DrawPanelCpp\DrawPanel.h" />
+    <ClInclude Include="..\..\DrawPanelCpp\DrawPanelCpp\GdiplusInit.h" />
     <ClInclude Include="ImageProcessingCPlusPlusHeaderFile.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\DrawPanel.cpp" />
+    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\GdiplusInit.cpp" />
     <ClCompile Include="ImageProcessingCPlusPlus.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

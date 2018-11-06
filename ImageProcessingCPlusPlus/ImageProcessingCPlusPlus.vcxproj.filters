@@ -21,12 +21,24 @@
     <ClInclude Include="ImageProcessingCPlusPlusHeaderFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\DrawPanelCpp\DrawPanelCpp\DrawPanel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DrawPanelCpp\DrawPanelCpp\GdiplusInit.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageProcessingCPlusPlus.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\DrawPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\GdiplusInit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
