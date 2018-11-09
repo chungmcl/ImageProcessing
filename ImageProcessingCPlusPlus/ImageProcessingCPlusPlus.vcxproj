@@ -158,8 +158,8 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\DrawPanel.cpp" />
-    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\GdiplusInit.cpp" />
+    <ClCompile Include="DrawPanel.cpp" />
+    <ClCompile Include="GdiplusInit.cpp" />
     <ClCompile Include="ImageProcessingCPlusPlus.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

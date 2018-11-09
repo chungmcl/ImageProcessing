@@ -35,10 +35,10 @@
     <ClCompile Include="ImageProcessingCPlusPlus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\DrawPanel.cpp">
+    <ClCompile Include="DrawPanel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\DrawPanelCpp\DrawPanelCpp\GdiplusInit.cpp">
+    <ClCompile Include="GdiplusInit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
