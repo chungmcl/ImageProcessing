@@ -6,6 +6,7 @@ private:
 	Gdiplus::Bitmap currentImage;
 	Gdiplus::BitmapData BMD;
 	Gdiplus::Rect GetRekt();
+	void Rotate();
 	byte* GetPixel(int x, int y);
 	void EndProcess();
 	int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
