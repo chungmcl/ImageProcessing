@@ -6,8 +6,17 @@ private:
 	Gdiplus::Bitmap currentImage;
 	Gdiplus::BitmapData BMD;
 	Gdiplus::PixelFormat pixelFormat;
+
 	Gdiplus::Rect GetRekt(Gdiplus::Bitmap &image, Gdiplus::BitmapData &data);
-	byte* GetPixel(int x, int y, Gdiplus::BitmapData BMD);
+	byte* GetPixelLocation(int x, int y, Gdiplus::BitmapData BMD);
+
+	uint16_t GetRed(int x, int y);
+	uint16_t GetGreen(int x, int y);
+	uint16_t GetBlue(int x, int y);
+	
+	void SetPixel(int x, int y, uint32_t setTo);
+	void SetPixel(int x, int y, uint16_t setTo);
+	
 	void EndProcess(Gdiplus::Bitmap &image, Gdiplus::BitmapData &BMD);
 	int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 public:
