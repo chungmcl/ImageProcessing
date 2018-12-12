@@ -13,6 +13,8 @@ private:
 	uint16_t GetRed(int x, int y);
 	uint16_t GetGreen(int x, int y);
 	uint16_t GetBlue(int x, int y);
+	uint16_t PaccPixel(uint16_t red, uint16_t green, uint16_t blue);
+
 	
 	void SetPixel(int x, int y, uint32_t setTo);
 	void SetPixel(int x, int y, uint16_t setTo);

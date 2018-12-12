@@ -152,8 +152,6 @@ void ImageProcessor::GrayScale()
 			}
 			else if (pixelFormat == PixelFormat16bppRGB565)
 			{
-
-
 				float average = (((GetRed(x, y) / 31.0) * .299) + ((GetGreen(x, y) / 63.0) * .587) + ((GetBlue(x, y) / 31.0) * .114));
 				uint16_t setTo = PaccPixel((uint16_t)(average * 31), (uint16_t)(average * 63), (uint16_t)(average * 31));
 
