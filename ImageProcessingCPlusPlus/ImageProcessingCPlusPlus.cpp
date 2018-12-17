@@ -124,7 +124,15 @@ void ImageProcessor::Rotate()
 		{
 			for (int sub = 0; sub < 4; sub++)
 			{
-				*(GetPixelLocation(rotatedBMD.Width - y - 1, x, rotatedBMD) + sub) = *(GetPixelLocation(x, y, BMD) + sub);
+				if (pixelFormat == PixelFormat32bppARGB)
+				{
+					*(GetPixelLocation(rotatedBMD.Width - y - 1, x, rotatedBMD) + sub) = *(GetPixelLocation(x, y, BMD) + sub);
+				}
+				else if (pixelFormat == PixelFormat16bppRGB565)
+				{
+					uint16_t red = GetRed(rotatedBMD.Width - y - 1, )
+					uint16_t setTo = 
+				}
 			}
 		}
 	}
