@@ -75,7 +75,6 @@ int main()
 	}
 }
 
-
 ImageProcessor::ImageProcessor(const WCHAR* location, Gdiplus::PixelFormat pf) : currentImage(location, false)
 {
 	pixelFormat = pf;
@@ -124,15 +123,7 @@ void ImageProcessor::Rotate()
 		{
 			for (int sub = 0; sub < 4; sub++)
 			{
-				if (pixelFormat == PixelFormat32bppARGB)
-				{
-					*(GetPixelLocation(rotatedBMD.Width - y - 1, x, rotatedBMD) + sub) = *(GetPixelLocation(x, y, BMD) + sub);
-				}
-				else if (pixelFormat == PixelFormat16bppRGB565)
-				{
-					uint16_t red = GetRed(rotatedBMD.Width - y - 1, )
-					uint16_t setTo = 
-				}
+				*(GetPixelLocation(rotatedBMD.Width - y - 1, x, rotatedBMD) + sub) = *(GetPixelLocation(x, y, BMD) + sub);
 			}
 		}
 	}
@@ -160,6 +151,8 @@ void ImageProcessor::GrayScale()
 			}
 			else if (pixelFormat == PixelFormat16bppRGB565)
 			{
+
+
 				float average = (((GetRed(x, y) / 31.0) * .299) + ((GetGreen(x, y) / 63.0) * .587) + ((GetBlue(x, y) / 31.0) * .114));
 				uint16_t setTo = PaccPixel((uint16_t)(average * 31), (uint16_t)(average * 63), (uint16_t)(average * 31));
 
@@ -206,6 +199,31 @@ void ImageProcessor::SetPixel(int x, int y, uint16_t setTo)
 uint16_t ImageProcessor::PaccPixel(uint16_t red, uint16_t green, uint16_t blue)
 {
 	return (red << 11) | (green << 5) | blue;
+}
+
+void ImageProcessor::Stegosaurus(char* text, int size)
+{
+	// 3 2 3
+	int pixelCount = BMD.Width * BMD.Height;
+	int possibleSize = pixelCount * 8;
+	if (size <= possibleSize)
+	{
+		for (int x = 0; x < BMD.Width; x++)
+		{
+			for (int y = 0; y < BMD.Height; y++)
+			{
+				// Backwards in 32 bit!
+				// Consider writing helper fucntions
+				uint8_t red = *(GetPixelLocation(x, y, BMD) + 2);
+				uint8_t green = *(GetPixelLocation(x, y, BMD) + 1);
+				uint8_t blue = *(GetPixelLocation(x, y, BMD));
+
+				uint8_t character = *(text + (x * y));
+			}
+		}
+	}
+	// Stegosaurus that bad boi
+	
 }
 
 void ImageProcessor::EndProcess(Gdiplus::Bitmap &image, Gdiplus::BitmapData &ImageBMD)
