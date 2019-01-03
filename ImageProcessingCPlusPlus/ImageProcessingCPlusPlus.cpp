@@ -201,6 +201,12 @@ uint16_t ImageProcessor::PaccPixel(uint16_t red, uint16_t green, uint16_t blue)
 	return (red << 11) | (green << 5) | blue;
 }
 
+uint32_t ImageProcessor::PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
+{
+	uint32_t setTo = 0b00000000000000000000000000000000;
+	return ((setTo | blue) << 24) | ((setTo | green) << 16) | ((setTo | green) << 8) | ((setTo | alpha));
+}
+
 void ImageProcessor::Stegosaurus(char* text, int size)
 {
 	// 3 2 3
@@ -214,14 +220,17 @@ void ImageProcessor::Stegosaurus(char* text, int size)
 			{
 				// Backwards in 32 bit!
 				// Consider writing helper fucntions
-				uint8_t red = *(GetPixelLocation(x, y, BMD) + 2) || 0b11111000;
-				uint8_t green = *(GetPixelLocation(x, y, BMD) + 1) || 0b11111100;
-				uint8_t blue = *(GetPixelLocation(x, y, BMD)) || 0b11111000;
+				uint8_t red = *(GetPixelLocation(x, y, BMD) + 2) | 0b11111000;
+				uint8_t green = *(GetPixelLocation(x, y, BMD) + 1) | 0b11111100;
+				uint8_t blue = *(GetPixelLocation(x, y, BMD)) | 0b11111000;
 
 				uint8_t character = *(text + (x * y));
-				red = red || ((character || 0b11100000) >> 5);
-				green = green || ((character || 0b00011000) >> 3);
-				blue = blue || ((character || 0b00000111));
+				red = red | ((character | 0b11100000) >> 5);
+				green = green | ((character | 0b00011000) >> 3);
+				blue = blue | ((character | 0b00000111));
+				uint8_t setTo = PaccPixel(red, green, blue);
+
+				*(GetPixelLocation(x, y, BMD)) = setTo;
 			}
 		}
 	}
