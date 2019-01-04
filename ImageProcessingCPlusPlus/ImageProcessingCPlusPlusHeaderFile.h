@@ -14,7 +14,7 @@ private:
 	uint16_t GetGreen(int x, int y);
 	uint16_t GetBlue(int x, int y);
 	uint16_t PaccPixel(uint16_t red, uint16_t green, uint16_t blue);
-
+	uint32_t PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha);
 	
 	void SetPixel(int x, int y, uint32_t setTo);
 	void SetPixel(int x, int y, uint16_t setTo);
@@ -26,4 +26,6 @@ public:
 	void GrayScale();
 	void HorizontalMirror();
 	void Rotate();
+	void Stegosaurus(char* text, int size);
+	void Destegosaurus(const wchar_t);
 };

@@ -233,8 +233,15 @@ void ImageProcessor::Stegosaurus(char* text, int size)
 				*(GetPixelLocation(x, y, BMD)) = setTo;
 			}
 		}
+		CLSID encoder;
+		GetEncoderClsid(L"image/png", &encoder);
+		currentImage.Save(L"C:\\Users\\1014051\\Desktop\\stegosaurus.png", &encoder);
 	}
 	// Stegosaurus that bad boi
+}
+
+void ImageProcessor::Destegosaurus(const wchar_t fileLocation)
+{
 	
 }
 
