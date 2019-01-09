@@ -26,6 +26,6 @@ public:
 	void GrayScale();
 	void HorizontalMirror();
 	void Rotate();
-	void Stegosaurus(char* text, int size);
+	void Stegosaurus(char* text, int textLength);
 	void Destegosaurus(const wchar_t);
 };
