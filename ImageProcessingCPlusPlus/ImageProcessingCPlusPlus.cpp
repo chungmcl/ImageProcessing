@@ -51,6 +51,8 @@ int main()
 		cout << "H for Horizontal Mirror" << endl;
 		cout << "Q for Quit" << endl;
 		cout << "R for Rotate" << endl;
+		cout << "S for Steg(osaurus)anography" << endl;
+		cout << "D for De-Steg(osaurus)anography" << endl;
 		cout << "Choose an option: ";
 			
 		string editInput;
@@ -67,6 +69,19 @@ int main()
 		if (editInput == "R")
 		{
 			imageProcessor.Rotate();
+		}
+		if (editInput == "S" && pixelFormat == PixelFormat32bppARGB)
+		{
+			system("cls");
+			cout << "Enter text to hide: ";
+			string input;
+			cin >> input;
+			const char* inputPointer = input.c_str();
+			imageProcessor.Stegosaurus(inputPointer, input.length);
+		}
+		if (editInput == "D")
+		{
+			imageProcessor.Destegosaurus();
 		}
 		if (editInput == "Q")
 		{
@@ -207,7 +222,7 @@ uint32_t ImageProcessor::PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uin
 	return ((setTo | blue) << 24) | ((setTo | green) << 16) | ((setTo | green) << 8) | ((setTo | alpha));
 }
 
-void ImageProcessor::Stegosaurus(char* text, int textLength)
+void ImageProcessor::Stegosaurus(const char* text, int textLength)
 {
 	// 3 2 3
 	int pixelCount = BMD.Width * BMD.Height;
@@ -267,7 +282,7 @@ void ImageProcessor::Stegosaurus(char* text, int textLength)
 	// Stegosaurus that bad boi
 }
 
-void ImageProcessor::Destegosaurus(const wchar_t fileLocation)
+void ImageProcessor::Destegosaurus()
 {
 	
 }
