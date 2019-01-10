@@ -235,8 +235,30 @@ void ImageProcessor::Stegosaurus(char* text, int textLength)
 		//		*(GetPixelLocation(x, y, BMD)) = setTo;
 		//	}
 		//}
-		byte* 
-		while ()
+
+		int x = 0;
+		int y = 0;
+		for (int i = 0; i < textByteSize; i++)
+		{
+			x++;
+			if (x == BMD.Width)
+			{
+				y++;
+				x = 0;
+			}
+
+			uint8_t red = *(GetPixelLocation(x, y, BMD) + 2) | 0b11111000;
+			uint8_t green = *(GetPixelLocation(x, y, BMD) + 1) | 0b11111100;
+			uint8_t blue = *(GetPixelLocation(x, y, BMD)) | 0b11111000;
+
+			uint8_t character = *(text + (x * y));
+			red = red | ((character | 0b11100000) >> 5);
+			green = green | ((character | 0b00011000) >> 3);
+			blue = blue | ((character | 0b00000111));
+			uint8_t setTo = PaccPixel(red, green, blue);
+
+			*(GetPixelLocation(x, y, BMD)) = setTo;
+		}
 
 		CLSID encoder;
 		GetEncoderClsid(L"image/png", &encoder);
