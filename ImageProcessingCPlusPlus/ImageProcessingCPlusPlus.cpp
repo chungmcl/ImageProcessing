@@ -77,7 +77,7 @@ int main()
 			string input;
 			cin >> input;
 			const char* inputPointer = input.c_str();
-			imageProcessor.Stegosaurus(inputPointer, input.length);
+			imageProcessor.Stegosaurus(inputPointer, input.length());
 		}
 		if (editInput == "D")
 		{
@@ -224,6 +224,7 @@ uint32_t ImageProcessor::PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uin
 
 void ImageProcessor::Stegosaurus(const char* text, int textLength)
 {
+	Rect rect = GetRekt(currentImage, BMD);
 	// 3 2 3
 	int pixelCount = BMD.Width * BMD.Height;
 	int possibleSize = pixelCount * 8;
@@ -235,7 +236,6 @@ void ImageProcessor::Stegosaurus(const char* text, int textLength)
 		int y = 0;
 		for (int i = 0; i < textByteSize; i++)
 		{
-			x++;
 			if (x == BMD.Width)
 			{
 				y++;
@@ -253,6 +253,8 @@ void ImageProcessor::Stegosaurus(const char* text, int textLength)
 			uint8_t setTo = PaccPixel(red, green, blue);
 
 			*(GetPixelLocation(x, y, BMD)) = setTo;
+
+			x++;
 		}
 
 		CLSID encoder;
