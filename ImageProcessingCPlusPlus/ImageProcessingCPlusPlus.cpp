@@ -222,7 +222,7 @@ uint32_t ImageProcessor::PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uin
 	return ((setTo | blue) << 24) | ((setTo | green) << 16) | ((setTo | green) << 8) | ((setTo | alpha));
 }
 
-void ImageProcessor::Stegosaurus(const char* text, int textLength)
+void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 {
 	// 4 pixels (32 bits) of header data detailing size of text
 	Rect rect = GetRekt(currentImage, BMD);
@@ -231,11 +231,22 @@ void ImageProcessor::Stegosaurus(const char* text, int textLength)
 	int possibleSize = pixelCount * 8;
 	int textByteSize = textLength * 8;
 
-	if (textByteSize <= possibleSize)
+	uint32_t headerData = textByteSize;
+	byte* textWithHeader = new byte[textLength + 4];
+	textWithHeader[0] = headerData | 0b11111111;
+	textWithHeader[1] = headerData | 0b1111111100000000;
+	textWithHeader[2] = headerData | 0b111111110000000000000000;
+	textWithHeader[3] = headerData | 0b11111111000000000000000000000000;
+	for (int i = 0; i < textLength; i++)
+	{
+		textWithHeader[i + 4] = text[i];
+	}
+
+	if (textByteSize + headerData <= possibleSize)
 	{
 		int x = 0;
 		int y = 0;
-		for (int i = 0; i < textByteSize; i++)
+		for (int i = 0; i < textByteSize + headerData; i++)
 		{
 			if (x == BMD.Width)
 			{
@@ -248,10 +259,10 @@ void ImageProcessor::Stegosaurus(const char* text, int textLength)
 			uint8_t blue = *(GetPixelLocation(x, y, BMD)) & 0b11111000;
 			uint8_t alpha = *(GetPixelLocation(x, y, BMD) + 3);
 
-			uint8_t character = *(text + i);
-			red = red | ((character & 0b11100000) >> 5);
-			green = green | ((character & 0b00011000) >> 3);
-			blue = blue | ((character & 0b00000111));
+			uint8_t byteData = *(textWithHeader + i);
+			red = red | ((byteData & 0b11100000) >> 5);
+			green = green | ((byteData & 0b00011000) >> 3);
+			blue = blue | ((byteData & 0b00000111));
 			uint32_t setTo = PaccPixel(red, green, blue, alpha);
 
 			SetPixel(x, y, setTo);
