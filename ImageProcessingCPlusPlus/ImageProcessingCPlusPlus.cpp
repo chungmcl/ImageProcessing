@@ -51,8 +51,11 @@ int main()
 		cout << "H for Horizontal Mirror" << endl;
 		cout << "Q for Quit" << endl;
 		cout << "R for Rotate" << endl;
-		cout << "S for Steg(osaurus)anography" << endl;
-		cout << "D for De-Steg(osaurus)anography" << endl;
+		if (pixelFormat == PixelFormat32bppARGB)
+		{
+			cout << "S for Steg(osaurus)anography" << endl;
+			cout << "D for De-Steg(osaurus)anography" << endl;
+		}
 		cout << "Choose an option: ";
 			
 		string editInput;
@@ -279,7 +282,36 @@ void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 
 void ImageProcessor::Destegosaurus()
 {
-	
+	Rect rect = GetRekt(currentImage, BMD);
+	uint32_t size = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		uint8_t quarterOfSizeData = PaccPixelDestegosaurus323ARGB(i, 0);
+		size = size | (quarterOfSizeData << ((i + 1) * 8));
+	}
+
+	char* text = new char[size];
+	int x = 3;
+	int y = 0;
+	for (int i = 0; i < size; i++)
+	{
+		if (x == BMD.Width)
+		{
+			y++;
+			x = 0;
+		}
+		uint8_t characterBytes = PaccPixelDestegosaurus323ARGB(x, y);
+
+		x++;
+	}
+}
+
+uint8_t ImageProcessor::PaccPixelDestegosaurus323ARGB(int x, int y)
+{
+	uint8_t red = *(GetPixelLocation(x, y, BMD) + 2) & 0b00000111;
+	uint8_t green = *(GetPixelLocation(x, y, BMD) + 1) & 0b00000011;
+	uint8_t blue = *(GetPixelLocation(x, y, BMD)) & 0b00000111;
+	return red | (green << 3) | (blue << 5);
 }
 
 void ImageProcessor::EndProcess(Gdiplus::Bitmap &image, Gdiplus::BitmapData &ImageBMD)
