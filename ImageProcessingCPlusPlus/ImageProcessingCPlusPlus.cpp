@@ -236,10 +236,10 @@ void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 
 	uint32_t headerData = textByteSize;
 	byte* textWithHeader = new byte[textLength + 4];
-	textWithHeader[0] = headerData | 0b11111111;
-	textWithHeader[1] = headerData | 0b1111111100000000;
-	textWithHeader[2] = headerData | 0b111111110000000000000000;
-	textWithHeader[3] = headerData | 0b11111111000000000000000000000000;
+	textWithHeader[0] = headerData & 0b11111111;
+	textWithHeader[1] = headerData & 0b1111111100000000;
+	textWithHeader[2] = headerData & 0b111111110000000000000000;
+	textWithHeader[3] = headerData & 0b11111111000000000000000000000000;
 	for (int i = 0; i < textLength; i++)
 	{
 		textWithHeader[i + 4] = text[i];
@@ -287,7 +287,7 @@ void ImageProcessor::Destegosaurus()
 	for (int i = 0; i < 4; i++)
 	{
 		uint8_t quarterOfSizeData = PaccPixelDestegosaurus323ARGB(i, 0);
-		size = size | (quarterOfSizeData << ((i + 1) * 8));
+		size = size | (quarterOfSizeData << (i * 8));
 	}
 
 	char* text = new char[size];
@@ -301,9 +301,10 @@ void ImageProcessor::Destegosaurus()
 			x = 0;
 		}
 		uint8_t characterBytes = PaccPixelDestegosaurus323ARGB(x, y);
-
+		text[i] = characterBytes;
 		x++;
 	}
+	cout << text << endl;
 }
 
 uint8_t ImageProcessor::PaccPixelDestegosaurus323ARGB(int x, int y)
@@ -311,7 +312,7 @@ uint8_t ImageProcessor::PaccPixelDestegosaurus323ARGB(int x, int y)
 	uint8_t red = *(GetPixelLocation(x, y, BMD) + 2) & 0b00000111;
 	uint8_t green = *(GetPixelLocation(x, y, BMD) + 1) & 0b00000011;
 	uint8_t blue = *(GetPixelLocation(x, y, BMD)) & 0b00000111;
-	return red | (green << 3) | (blue << 5);
+	return (red << 5) | (green << 3) | (blue);
 }
 
 void ImageProcessor::EndProcess(Gdiplus::Bitmap &image, Gdiplus::BitmapData &ImageBMD)
