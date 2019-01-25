@@ -8,7 +8,7 @@ private:
 	Gdiplus::PixelFormat pixelFormat;
 
 	Gdiplus::Rect GetRekt(Gdiplus::Bitmap &image, Gdiplus::BitmapData &data);
-	byte* GetPixelLocation(int x, int y, Gdiplus::BitmapData BMD);
+	byte* GetPixel(int x, int y, Gdiplus::BitmapData BMD);
 
 	uint16_t GetRed(int x, int y);
 	uint16_t GetGreen(int x, int y);

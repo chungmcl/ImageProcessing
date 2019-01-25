@@ -13,12 +13,13 @@
 using namespace Gdiplus;
 using namespace std;
 
+// A FEW NOTES:
+// RGBA is ABGR in memory when 32-bit is used
 int main()
 {
-	bool programRunning = true;
 	GdiplusInit init;
 
-	while (programRunning)
+	while (true)
 	{
 		system("cls");
 		cout << "Conversion Software Version 7.0" << endl;
@@ -49,8 +50,8 @@ int main()
 
 		cout << "G for Grayscale" << endl;
 		cout << "H for Horizontal Mirror" << endl;
-		cout << "Q for Quit" << endl;
 		cout << "R for Rotate" << endl;
+		cout << "Q for Quit" << endl;
 		if (pixelFormat == PixelFormat32bppARGB)
 		{
 			cout << "S for Steg(osaurus)anography" << endl;
@@ -93,11 +94,15 @@ int main()
 	}
 }
 
+// Constructor
+// Initializes the current image to be processed and in which pixelformat to process it
 ImageProcessor::ImageProcessor(const WCHAR* location, Gdiplus::PixelFormat pf) : currentImage(location, false)
 {
 	pixelFormat = pf;
 }
 
+// Acquires the "rect" object which serves as the image
+// and initializes BMD which contains data about the image
 Rect ImageProcessor::GetRekt(Gdiplus::Bitmap &image, Gdiplus::BitmapData &data)
 {
 	RectF getRekt;
@@ -110,23 +115,26 @@ Rect ImageProcessor::GetRekt(Gdiplus::Bitmap &image, Gdiplus::BitmapData &data)
 	return rekt;
 }
 
+// Horizontally mirros the image
 void ImageProcessor::HorizontalMirror()
 {
 	Rect rect = GetRekt(currentImage, BMD);
 
-	for (int y = 0; y < BMD.Height / 2; y++)
+	for (int y = 0; y < BMD.Height / 2; y++) // goes through each line
 	{
-		for (int x = 0; x < BMD.Width; x++)
+		for (int x = 0; x < BMD.Width; x++) // goes through each pixel
 		{
-			for (int sub = 0; sub < (BMD.Stride / BMD.Width); sub++)
+			for (int sub = 0; sub < (BMD.Stride / BMD.Width); sub++) // goes through each subpixel
 			{
-				*(GetPixelLocation(x, BMD.Height - y, BMD) + sub) = *(GetPixelLocation(x, y, BMD) + sub);
+				*(GetPixel(x, BMD.Height - y, BMD) + sub) = *(GetPixel(x, y, BMD) + sub);
 			}
 		}
 	}
+
 	EndProcess(currentImage, BMD);
 }
 
+// Rotates image 90 degrees to the right
 void ImageProcessor::Rotate()
 {
 	Rect rect = GetRekt(currentImage, BMD);
@@ -141,13 +149,14 @@ void ImageProcessor::Rotate()
 		{
 			for (int sub = 0; sub < 4; sub++)
 			{
-				*(GetPixelLocation(rotatedBMD.Width - y - 1, x, rotatedBMD) + sub) = *(GetPixelLocation(x, y, BMD) + sub);
+				*(GetPixel(rotatedBMD.Width - y - 1, x, rotatedBMD) + sub) = *(GetPixel(x, y, BMD) + sub);
 			}
 		}
 	}
 	EndProcess(rotatedImage, rotatedBMD);
 }
 
+// Display image in grayscale
 void ImageProcessor::GrayScale()
 {
 	Rect rect = GetRekt(currentImage, BMD);
@@ -157,20 +166,15 @@ void ImageProcessor::GrayScale()
 	{
 		for (int x = 0; x < BMD.Width; x++)
 		{
-			/*byte avg = ((*(GetPixel(x, y, BMD)) * .114) + ((*(GetPixel(x, y, BMD)) + 1) * .587) + ((*(GetPixel(x, y, BMD)) + 2) * .299) / 3);
-			for (int sub = 0; sub < (BMD.Stride / BMD.Width) - 1; sub++)
-				*(GetPixel(x, y, BMD) + sub) = avg;*/
 			if (pixelFormat == PixelFormat32bppARGB)
 			{
-				uint8_t oldAlpha = *(GetPixelLocation(x, y, BMD) + 3);
-				uint8_t avg = (*(GetPixelLocation(x, y, BMD)) * .114) + (*(GetPixelLocation(x, y, BMD) + 1) * .587) + (*(GetPixelLocation(x, y, BMD) + 2) * .299);
+				uint8_t oldAlpha = *(GetPixel(x, y, BMD) + 3);
+				uint8_t avg = (*(GetPixel(x, y, BMD)) * .114) + (*(GetPixel(x, y, BMD) + 1) * .587) + (*(GetPixel(x, y, BMD) + 2) * .299);
 				uint32_t setTo = (oldAlpha << 24) | (avg << 16) | (avg << 8) | (avg);
 				SetPixel(x, y, setTo);
 			}
 			else if (pixelFormat == PixelFormat16bppRGB565)
 			{
-
-
 				float average = (((GetRed(x, y) / 31.0) * .299) + ((GetGreen(x, y) / 63.0) * .587) + ((GetBlue(x, y) / 31.0) * .114));
 				uint16_t setTo = PaccPixel((uint16_t)(average * 31), (uint16_t)(average * 63), (uint16_t)(average * 31));
 
@@ -181,50 +185,67 @@ void ImageProcessor::GrayScale()
 	EndProcess(currentImage, BMD);
 }
 
-uint8_t* ImageProcessor::GetPixelLocation(int x, int y, Gdiplus::BitmapData ImageBMD)
+// Returns a reference to the byte of the specified pixel and position x and y of the image
+byte* ImageProcessor::GetPixel(int x, int y, Gdiplus::BitmapData ImageBMD)
 {
-	return (uint8_t*)ImageBMD.Scan0 + (ImageBMD.Stride * y) + (x * (ImageBMD.Stride / ImageBMD.Width));
+	return (byte*)ImageBMD.Scan0 + (ImageBMD.Stride * y) + (x * (ImageBMD.Stride / ImageBMD.Width));
 }
 
+// Returns the red component of a pixel in an image of a 16 bit format
 uint16_t ImageProcessor::GetRed(int x, int y)
 {
 	uint16_t mask = 0b1111100000000000;
-	return (*((uint16_t*)GetPixelLocation(x, y, BMD)) & mask) >> 11;
+	return (*((uint16_t*)GetPixel(x, y, BMD)) & mask) >> 11;
 }
 
+// Returns the green component of a pixel in an image of a 16 bit format
 uint16_t ImageProcessor::GetGreen(int x, int y)
 {
 	uint16_t mask = 0b0000011111100000;
-	return (*((uint16_t*)GetPixelLocation(x, y, BMD)) & mask) >> 5;
+	return (*((uint16_t*)GetPixel(x, y, BMD)) & mask) >> 5;
 }
 
+// Returns the blue component of a pixel in an image of a 16 bit format
 uint16_t ImageProcessor::GetBlue(int x, int y)
 {
 	uint16_t mask = 0b0000000000011111;
-	return *((uint16_t*)GetPixelLocation(x, y, BMD)) & mask;
+	return *((uint16_t*)GetPixel(x, y, BMD)) & mask;
 }
 
+// Sets the pixel at position x and y of an image in a 32 bit format
 void ImageProcessor::SetPixel(int x, int y, uint32_t setTo)
 {
-	*((uint32_t*)(GetPixelLocation(x, y, BMD))) = setTo;
+	*((uint32_t*)(GetPixel(x, y, BMD))) = setTo;
 }
 
+// Sets the pixel at position x and y of an image in a 16 bit format
 void ImageProcessor::SetPixel(int x, int y, uint16_t setTo)
 {
-	*((uint16_t*)(GetPixelLocation(x, y, BMD))) = setTo;
+	*((uint16_t*)(GetPixel(x, y, BMD))) = setTo;
 }
 
+// Combines the red, green, and blue components of three separate 16 bit ints into a single 16 bit int
 uint16_t ImageProcessor::PaccPixel(uint16_t red, uint16_t green, uint16_t blue)
 {
 	return (red << 11) | (green << 5) | blue;
 }
 
+// Combines the red, green, and blue components of three separate 32 bit ints into a single 32 bit int
 uint32_t ImageProcessor::PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha)
 {
+	// It could be declared as just 'setTo = 0' but for the code reader's sake we left in 32 zeros hehe_xD.RAR
 	uint32_t setTo = 0b00000000000000000000000000000000;
-	return ((setTo | blue) << 24) | ((setTo | green) << 16) | ((setTo | green) << 8) | ((setTo | alpha));
+	return ((setTo | blue) << 24) | ((setTo | green) << 16) | ((setTo | red) << 8) | ((setTo | alpha));
 }
 
+// Given a string of text and its length,
+// Hides the text in an image loaded in a 32 bit format
+// Each byte of the text is split into the R, G, and B components of eaxh pixel
+// 3 bits for red, 2 bits for green, and 3 bits for blue
+// A header that spans 4 pixels details the length of the text as a 32 bit integer, so that
+// when the image is "Desteganographized," it can know when to stop reading
+//
+// "Steganography" 
 void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 {
 	// 4 pixels (32 bits) of header data detailing size of text
@@ -257,12 +278,21 @@ void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 				x = 0;
 			}
 
-			uint8_t red = *(GetPixelLocation(x, y, BMD) + 2) & 0b11111000;
-			uint8_t green = *(GetPixelLocation(x, y, BMD) + 1) & 0b11111100;
-			uint8_t blue = *(GetPixelLocation(x, y, BMD)) & 0b11111000;
-			uint8_t alpha = *(GetPixelLocation(x, y, BMD) + 3);
+			// Declare the RGBA and remove the first three least significant bits
+			uint8_t red = *(GetPixel(x, y, BMD) + 2) & 0b11111000;
+			uint8_t green = *(GetPixel(x, y, BMD) + 1) & 0b11111100;
+			uint8_t blue = *(GetPixel(x, y, BMD)) & 0b11111000;
+			// Alpha is unused for storing hidden bits
+			// Declare for the PaccPixel method
+			uint8_t alpha = *(GetPixel(x, y, BMD) + 3);
+
 
 			uint8_t byteData = *(textWithHeader + i);
+
+			// Add the current byteData (aka the character) to RGB,
+			// Take the 3 left-most bits of the 8 bit character and push it to the far right, and add it to red
+			// Take the middle 2 bits of the 8 bit character and push it to the far right, and add it to blue
+			// Take the 3 right-most bits of the 8 bit character (don't need to move since it's already in the far right), and add it to green
 			red = red | ((byteData & 0b11100000) >> 5);
 			green = green | ((byteData & 0b00011000) >> 3);
 			blue = blue | ((byteData & 0b00000111));
@@ -275,15 +305,22 @@ void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 
 		CLSID encoder;
 		GetEncoderClsid(L"image/png", &encoder);
-		currentImage.Save(L"C:\\Users\\1014051\\Desktop\\stegosaurus.png", &encoder);
+		(currentImage).Save(L"C:\\Users\\chung\\Desktop\\stegosaurus.png", &encoder);
 	}
 	// Stegosaurus that bad boi
 }
 
+// Reads hidden text in an image that is hidden in the format specified in Stegosaurus (Steganography)
+//
+// "De-Steganography" 
 void ImageProcessor::Destegosaurus()
 {
 	Rect rect = GetRekt(currentImage, BMD);
 	uint32_t size = 0;
+	// Loop through four bytes of data
+	// Stored a 32 bit integer describing the size of the text over four bytes
+	// 8 bits per pixel
+
 	for (int i = 0; i < 4; i++)
 	{
 		uint8_t quarterOfSizeData = PaccPixelDestegosaurus323ARGB(i, 0);
@@ -307,14 +344,17 @@ void ImageProcessor::Destegosaurus()
 	cout << text << endl;
 }
 
+// Concatenates the byte (char) back together in pixel at location x, y
+// for Destegasaurus (De-Steganography)
 uint8_t ImageProcessor::PaccPixelDestegosaurus323ARGB(int x, int y)
 {
-	uint8_t red = *(GetPixelLocation(x, y, BMD) + 2) & 0b00000111;
-	uint8_t green = *(GetPixelLocation(x, y, BMD) + 1) & 0b00000011;
-	uint8_t blue = *(GetPixelLocation(x, y, BMD)) & 0b00000111;
-	return (red << 5) | (green << 3) | (blue);
+	uint8_t red = *(GetPixel(x, y, BMD) + 2) & 0b00000111;
+	uint8_t green = *(GetPixel(x, y, BMD) + 1) & 0b00000011;
+	uint8_t blue = *(GetPixel(x, y, BMD)) & 0b00000111;
+	return (blue << 5) | (green << 3) | (red);
 }
 
+// Unlocks bits of image and draws image in drawpanel
 void ImageProcessor::EndProcess(Gdiplus::Bitmap &image, Gdiplus::BitmapData &ImageBMD)
 {
 	image.UnlockBits(&ImageBMD);
@@ -322,6 +362,8 @@ void ImageProcessor::EndProcess(Gdiplus::Bitmap &image, Gdiplus::BitmapData &Ima
 	drawPanel.MessageLoop();
 }
 
+// MSDN magic code that helps encode image to specific format (.jpg, .png, etc)
+// When image is saved
 int ImageProcessor::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 {
 	UINT  num = 0;          // number of image encoders
@@ -352,15 +394,3 @@ int ImageProcessor::GetEncoderClsid(const WCHAR* format, CLSID* pClsid)
 	free(pImageCodecInfo);
 	return -1;  // Failure
 }
-
-
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
