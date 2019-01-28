@@ -245,7 +245,7 @@ uint32_t ImageProcessor::PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uin
 // A header that spans 4 pixels details the length of the text as a 32 bit integer, so that
 // when the image is "Desteganographized," it can know when to stop reading
 //
-// "Steganography" 
+// "Steganography"
 void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 {
 	// 4 pixels (32 bits) of header data detailing size of text
