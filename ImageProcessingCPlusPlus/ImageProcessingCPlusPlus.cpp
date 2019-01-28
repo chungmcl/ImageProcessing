@@ -18,8 +18,9 @@ using namespace std;
 int main()
 {
 	GdiplusInit init;
+	bool isRunning = true;
 
-	while (true)
+	while (isRunning)
 	{
 		system("cls");
 		cout << "Conversion Software Version 7.0" << endl;
@@ -59,37 +60,53 @@ int main()
 		}
 		cout << "Choose an option: ";
 			
-		string editInput;
+		char editInput;
 		cin >> editInput;
 
-		if (editInput == "G")
+		switch (editInput)
 		{
+		case 'G':
 			imageProcessor.GrayScale();
-		}
-		if (editInput == "H")
-		{
-			imageProcessor.HorizontalMirror();
-		}
-		if (editInput == "R")
-		{
-			imageProcessor.Rotate();
-		}
-		if (editInput == "S" && pixelFormat == PixelFormat32bppARGB)
-		{
-			system("cls");
-			cout << "Enter text to hide: ";
-			string input;
-			cin >> input;
-			const char* inputPointer = input.c_str();
-			imageProcessor.Stegosaurus(inputPointer, input.length());
-		}
-		if (editInput == "D")
-		{
-			imageProcessor.Destegosaurus();
-		}
-		if (editInput == "Q")
-		{
 			break;
+		case 'H':
+			imageProcessor.HorizontalMirror();
+			break;
+		case 'R':
+			break;
+			imageProcessor.Rotate();
+		case 'S':
+			if (pixelFormat == PixelFormat32bppARGB)
+			{
+				system("cls");
+				cout << "Enter text to hide: ";
+				string input;
+				cin >> input;
+				const char* inputPointer = input.c_str();
+				imageProcessor.Stegosaurus(inputPointer, input.length());
+			}
+			else
+			{
+				cout << "Unaccepted input - Ending program" << endl;
+				isRunning = false;
+			}
+			break;
+		case 'D':
+			if (pixelFormat == PixelFormat32bppARGB)
+			{
+				imageProcessor.Destegosaurus();
+			}
+			else
+			{
+				cout << "Unaccepted input - Ending program" << endl;
+				isRunning = false;
+			}
+			break;
+		case 'Q':
+			isRunning = false;
+			break;
+		default:
+			cout << "Unaccepted input - Ending program" << endl;
+			isRunning = false;
 		}
 	}
 }
@@ -115,7 +132,7 @@ Rect ImageProcessor::GetRekt(Gdiplus::Bitmap &image, Gdiplus::BitmapData &data)
 	return rekt;
 }
 
-// Horizontally mirros the image
+// Horizontally mirrors the image
 void ImageProcessor::HorizontalMirror()
 {
 	Rect rect = GetRekt(currentImage, BMD);
