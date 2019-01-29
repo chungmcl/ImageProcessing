@@ -80,7 +80,13 @@ int main()
 				system("cls");
 				cout << "Enter text to hide: ";
 				string input;
-				cin >> input;
+				char* buffer = new char[1024];
+				do
+				{
+					cin.getline(buffer, 1024);
+					input += buffer;
+				} while (strcmp(buffer, "<EOF>") != 0);
+				delete[] buffer;
 				const char* inputPointer = input.c_str();
 				imageProcessor.Stegosaurus(inputPointer, input.length());
 			}
@@ -252,7 +258,7 @@ uint32_t ImageProcessor::PaccPixel(uint8_t red, uint8_t green, uint8_t blue, uin
 {
 	// It could be declared as just 'setTo = 0' but for the code reader's sake we left in 32 zeros hehe_xD.RAR
 	uint32_t setTo = 0b00000000000000000000000000000000;
-	return ((setTo | blue) << 24) | ((setTo | green) << 16) | ((setTo | red) << 8) | ((setTo | alpha));
+	return ((setTo | alpha) << 24) | ((setTo | red) << 16) | ((setTo | green) << 8) | ((setTo | blue));
 }
 
 // Given a string of text and its length,
@@ -269,25 +275,22 @@ void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 	Rect rect = GetRekt(currentImage, BMD);
 	// 3 2 3
 	int pixelCount = BMD.Width * BMD.Height;
-	int possibleSize = pixelCount * 8;
-	int textByteSize = textLength * 8;
+	int possibleSize = pixelCount;
+	int textByteSize = textLength;
 
 	uint32_t headerData = textByteSize;
 	byte* textWithHeader = new byte[textLength + 4];
-	textWithHeader[0] = headerData & 0b11111111;
-	textWithHeader[1] = headerData & 0b1111111100000000;
-	textWithHeader[2] = headerData & 0b111111110000000000000000;
-	textWithHeader[3] = headerData & 0b11111111000000000000000000000000;
+	*((uint32_t*)(textWithHeader)) = headerData;
 	for (int i = 0; i < textLength; i++)
 	{
 		textWithHeader[i + 4] = text[i];
 	}
 
-	if (textByteSize + headerData <= possibleSize)
+	if (headerData + 4 <= possibleSize)
 	{
 		int x = 0;
 		int y = 0;
-		for (int i = 0; i < textByteSize + headerData; i++)
+		for (int i = 0; i < headerData; i++)
 		{
 			if (x == BMD.Width)
 			{
@@ -322,7 +325,7 @@ void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 
 		CLSID encoder;
 		GetEncoderClsid(L"image/png", &encoder);
-		(currentImage).Save(L"C:\\Users\\chung\\Desktop\\stegosaurus.png", &encoder);
+		(currentImage).Save(L"C:\\Users\\1014051\\Desktop\\stegosaurus.png", &encoder);
 	}
 	// Stegosaurus that bad boi
 }
@@ -344,8 +347,8 @@ void ImageProcessor::Destegosaurus()
 		size = size | (quarterOfSizeData << (i * 8));
 	}
 
-	char* text = new char[size];
-	int x = 3;
+	char* text = new char[size + 1];
+	int x = 4;
 	int y = 0;
 	for (int i = 0; i < size; i++)
 	{
@@ -358,7 +361,9 @@ void ImageProcessor::Destegosaurus()
 		text[i] = characterBytes;
 		x++;
 	}
+	text[size] = '\0';
 	cout << text << endl;
+	system("pause");
 }
 
 // Concatenates the byte (char) back together in pixel at location x, y
@@ -368,7 +373,7 @@ uint8_t ImageProcessor::PaccPixelDestegosaurus323ARGB(int x, int y)
 	uint8_t red = *(GetPixel(x, y, BMD) + 2) & 0b00000111;
 	uint8_t green = *(GetPixel(x, y, BMD) + 1) & 0b00000011;
 	uint8_t blue = *(GetPixel(x, y, BMD)) & 0b00000111;
-	return (blue << 5) | (green << 3) | (red);
+	return (red << 5) | (green << 3) | (blue);
 }
 
 // Unlocks bits of image and draws image in drawpanel
