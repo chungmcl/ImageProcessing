@@ -155,7 +155,7 @@ void ImageProcessor::HorizontalMirror()
 		{
 			for (int sub = 0; sub < (BMD.Stride / BMD.Width); sub++) // goes through each subpixel
 			{
-				*(GetPixel(x, BMD.Height - y, BMD) + sub) = *(GetPixel(x, y, BMD) + sub);
+				*(GetPixel(x, BMD.Height - y - 1, BMD) + sub) = *(GetPixel(x, y, BMD) + sub);
 			}
 		}
 	}
