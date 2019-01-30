@@ -6,6 +6,7 @@ private:
 	Gdiplus::Bitmap currentImage;
 	Gdiplus::BitmapData BMD;
 	Gdiplus::PixelFormat pixelFormat;
+	const wchar_t* saveLocation;
 
 	Gdiplus::Rect GetRekt(Gdiplus::Bitmap &image, Gdiplus::BitmapData &data);
 	byte* GetPixel(int x, int y, Gdiplus::BitmapData BMD);
@@ -23,7 +24,7 @@ private:
 	void EndProcess(Gdiplus::Bitmap &image, Gdiplus::BitmapData &BMD);
 	int GetEncoderClsid(const WCHAR* format, CLSID* pClsid);
 public:
-	ImageProcessor(const WCHAR* location, Gdiplus::PixelFormat pf);
+	ImageProcessor(const WCHAR* location, Gdiplus::PixelFormat pf, const WCHAR* saveLocation);
 	void GrayScale();
 	void HorizontalMirror();
 	void Rotate();

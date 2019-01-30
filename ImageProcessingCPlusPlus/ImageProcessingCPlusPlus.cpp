@@ -20,6 +20,11 @@ int main()
 	GdiplusInit init;
 	bool isRunning = true;
 
+	cout << "Conversion Software Version 7.0" << endl;
+	cout << "Please enter location to store saved images: ";
+	wstring location;
+	wcin >> location;
+
 	while (isRunning)
 	{
 		system("cls");
@@ -47,7 +52,7 @@ int main()
 			pixelFormat = PixelFormat16bppRGB565;
 		}
 
-		ImageProcessor imageProcessor(fileInput.c_str(), pixelFormat);
+		ImageProcessor imageProcessor(fileInput.c_str(), pixelFormat, location.c_str());
 
 		cout << "G for Grayscale" << endl;
 		cout << "H for Horizontal Mirror" << endl;
@@ -119,9 +124,10 @@ int main()
 
 // Constructor
 // Initializes the current image to be processed and in which pixelformat to process it
-ImageProcessor::ImageProcessor(const WCHAR* location, Gdiplus::PixelFormat pf) : currentImage(location, false)
+ImageProcessor::ImageProcessor(const WCHAR* location, Gdiplus::PixelFormat pf, const WCHAR* saveLocationInput) : currentImage(location, false)
 {
 	pixelFormat = pf;
+	saveLocation = saveLocationInput;
 }
 
 // Acquires the "rect" object which serves as the image
@@ -325,9 +331,13 @@ void ImageProcessor::Stegosaurus(const char* text, const int textLength)
 
 		CLSID encoder;
 		GetEncoderClsid(L"image/png", &encoder);
-		(currentImage).Save(L"C:\\Users\\1014051\\Desktop\\stegosaurus.png", &encoder);
+		(currentImage).Save(saveLocation, &encoder);
 	}
-	// Stegosaurus that bad boi
+	else
+	{
+		cout << "Data to be hidden exceeds possible size in this image.";
+		system("pause");
+	}
 }
 
 // Reads hidden text in an image that is hidden in the format specified in Stegosaurus (Steganography)
@@ -364,6 +374,7 @@ void ImageProcessor::Destegosaurus()
 	text[size] = '\0';
 	cout << text << endl;
 	system("pause");
+	delete[] text;
 }
 
 // Concatenates the byte (char) back together in pixel at location x, y
